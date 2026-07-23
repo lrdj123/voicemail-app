@@ -27,10 +27,18 @@ jobs:
       - name: Build debug APK
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
-      - name: Find and Upload APK
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace
+      - name: Locate APK
+        run: |
+          echo "Arquivos APK encontrados:"
+          find "$GITHUB_WORKSPACE" -type f -name "*.apk" -print
+          echo "Conteúdo de app/build:"
+          find app/build -maxdepth 6 -type f -print 2>/dev/null || true
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: VoiceMail-APK
+          name: VoiceMail-v2-APK
           path: |
-            **/*.apk
+            app/build/outputs/**/*.apk
+            **/build/outputs/**/*.apk
+          if-no-files-found: error
